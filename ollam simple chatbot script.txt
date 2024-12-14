@@ -1,0 +1,48 @@
+import requests
+import sys
+
+def get_ollama_response(model, prompt):
+    """
+    Send a prompt to Ollama and get a response.
+    """
+    url = 'http://localhost:11434/api/generate'
+    
+    payload = {
+        'model': model,
+        'prompt': prompt,
+        'stream': False
+    }
+    
+    try:
+        response = requests.post(url, json=payload, timeout=60)
+        response.raise_for_status()
+        response_data = response.json()
+        return response_data.get('response', 'No response')
+    
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+def main():
+    # Use the model you confirmed is working
+    model = 'llama3.2:latest'
+    
+    print(f"Chat with {model}. Type 'exit' to quit.")
+    
+    while True:
+        # Get user input
+        user_input = input("\nYou: ")
+        
+        # Check for exit
+        if user_input.lower() == 'exit':
+            print("Goodbye!")
+            break
+        
+        # Get and print response
+        response = get_ollama_response(model, user_input)
+        
+        if response:
+            print(f"\nAI: {response}")
+
+if __name__ == '__main__':
+    main()
